@@ -10,6 +10,15 @@ paths:
             type: string
       tags:
       - index
+  /user/DeleteUser:
+    delete:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      tags:
+      - DeleteUser
   /user/GetUserList:
     get:
       responses:
@@ -19,4 +28,30 @@ paths:
             type: string
       tags:
       - getlist
+  /user/Register:
+    post:
+      parameters:
+      - description: Name of the user
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: Email of the user
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Password of the user
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Register a new user
+      tags:
+      - register
 swagger: "2.0"

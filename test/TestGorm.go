@@ -18,7 +18,7 @@ func TestDB() {
 	db.AutoMigrate(&models.UserBasic{})
 
 	// Create
-	// db.Create(&models.UserBasic{Name: "Bob", Password: "Bob123"})
+	db.Create(&models.UserBasic{Name: "Bob", Password: "Bob123"})
 
 	// Read
 	user := models.UserBasic{}

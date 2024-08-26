@@ -30,10 +30,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/DeleteUser": {
+            "delete": {
+                "tags": [
+                    "DeleteUser"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/GetUserList": {
             "get": {
                 "tags": [
                     "getlist"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/Register": {
+            "post": {
+                "tags": [
+                    "register"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name of the user",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email of the user",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password of the user",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
