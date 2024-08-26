@@ -2,7 +2,6 @@ package models
 
 import (
 	"ginchat/utils"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -16,9 +15,9 @@ type UserBasic struct {
 	Identity      int 
 	ClientID      string
 	ClientPort    int
-	LoginTime     time.Time
-	HeartbeatTime time.Time
-	LogoutTime    time.Time
+	LoginTime     uint64
+	HeartbeatTime uint64
+	LogoutTime    uint64
 	IsLogout      bool
 	DeviceInfo    string
 }

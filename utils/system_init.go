@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -18,17 +17,13 @@ func InitConfig() {
 		log.Fatalf("Error reading config file, %s", err)
 	}
 	log.Printf("config app: %v", viper.Get("app"))
-	log.Printf("config mysql: %v", viper.Get("mysql"))
 }
 
-func InitMySQL() (*gorm.DB, error) {
+func InitMySQL() {
 	dsn := viper.GetString("mysql.dns")
 	if dsn == "" {
-		return nil, fmt.Errorf("mysql dns is not configured")
+		log.Printf("mysql dns is not configured")
 	}
-	DB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect database: %w", err)
-	}
-	return DB, nil
+	DB, _ = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	log.Printf("config mysql: %v", viper.Get("mysql"))
 }
