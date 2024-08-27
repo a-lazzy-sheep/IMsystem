@@ -2,7 +2,10 @@ package service
 
 import (
 	"ginchat/models"
+	"log"
+	"strconv"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 )
 
@@ -70,5 +73,53 @@ func DeleteUser(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "User deleted successfully",
+	})
+}
+// UpdateUser
+// @Summary Update a user
+// @Tags UpdateUser
+// @param id query string true "ID of the user"
+// @param name query string true "Name of the user"
+// @param email query string true "Email of the user"
+// @param password query string true "Password of the user"
+// @param phone query string true "Phone of the user"
+// @Success 200 {string} UpdateUser
+// @Router /user/UpdateUser [put]
+func UpdateUser(c *gin.Context) {
+	var user models.UserBasic
+	var err error
+
+	// 将字符串类型的id转换为uint类型
+	var id64 uint64
+	if id64, err = strconv.ParseUint(c.Query("id"), 10, 64); err != nil {
+		c.JSON(400, gin.H{
+			"error": "Invalid ID format",
+		})
+		return
+	}
+	user.ID = uint(id64)
+
+	user.Name = c.Query("name")
+	user.Email = c.Query("email")
+	user.Password = c.Query("password")
+	user.Phone = c.Query("phone")
+	result, err := govalidator.ValidateStruct(&user)
+	if err != nil {
+		log.Printf("Invalid data format: %v", err)
+		c.JSON(400, gin.H{
+			"error": "Invalid data format", 
+			"result" : result,
+		})
+		return
+	}
+	if err := models.UpdateUser(&user); err != nil {
+		c.JSON(500, gin.H{
+			"error": "Failed to update user",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "User updated successfully",
 	})
 }

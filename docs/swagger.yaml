@@ -61,4 +61,40 @@ paths:
       summary: Register a new user
       tags:
       - register
+  /user/UpdateUser:
+    put:
+      parameters:
+      - description: ID of the user
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Name of the user
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: Email of the user
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Password of the user
+        in: query
+        name: password
+        required: true
+        type: string
+      - description: Phone of the user
+        in: query
+        name: phone
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Update a user
+      tags:
+      - UpdateUser
 swagger: "2.0"
