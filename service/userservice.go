@@ -54,17 +54,14 @@ func Register(c *gin.Context) {
 }
 
 // DeleteUser
+// @Summary Delete a user
 // @Tags DeleteUser
+// @param name query string true "Name of the user"
 // @Success 200 {string} DeleteUser
 // @Router /user/DeleteUser [delete]
 func DeleteUser(c *gin.Context) {
 	var user models.UserBasic
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(400, gin.H{
-			"error": "Invalid request",
-		})
-		return
-	}
+	user.Name = c.Query("name")
 	if err := models.DeleteUser(&user); err != nil {
 		c.JSON(500, gin.H{
 			"error": "Failed to delete user",

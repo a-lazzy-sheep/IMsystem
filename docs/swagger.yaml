@@ -12,11 +12,18 @@ paths:
       - index
   /user/DeleteUser:
     delete:
+      parameters:
+      - description: Name of the user
+        in: query
+        name: name
+        required: true
+        type: string
       responses:
         "200":
           description: OK
           schema:
             type: string
+      summary: Delete a user
       tags:
       - DeleteUser
   /user/GetUserList:

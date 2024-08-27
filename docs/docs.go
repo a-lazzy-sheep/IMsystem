@@ -35,6 +35,16 @@ const docTemplate = `{
                 "tags": [
                     "DeleteUser"
                 ],
+                "summary": "Delete a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name of the user",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

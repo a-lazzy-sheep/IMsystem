@@ -44,7 +44,7 @@ func CreateUser(user *UserBasic) error {
 }
 
 func DeleteUser(user *UserBasic) error {
-	result := utils.DB.Delete(&user)
+	result := utils.DB.Where("name = ?",user.Name).Delete(&UserBasic{}) 
 	if result.Error != nil {
 		return result.Error
 	}
