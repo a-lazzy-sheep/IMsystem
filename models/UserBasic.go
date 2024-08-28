@@ -80,3 +80,22 @@ func UpdateUser(user *UserBasic) error {
 	}
 	return nil
 }
+
+func FindUserByName(name string) (*UserBasic, error) {
+	var user UserBasic
+	result := utils.DB.Where("name = ?",name).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
+
+func FindUserByEmail(email string) (*UserBasic, error) {
+	var user UserBasic
+	result := utils.DB.Where("email = ?",email).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
+

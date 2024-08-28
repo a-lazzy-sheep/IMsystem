@@ -97,6 +97,13 @@ const docTemplate = `{
                         "name": "password",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Re-enter password of the user",
+                        "name": "rePassword",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
