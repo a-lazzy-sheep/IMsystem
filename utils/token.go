@@ -11,6 +11,7 @@ var jwtKey = []byte("123wyy321")
 // Claims 结构体用于存储JWT的声明
 type Claims struct {
 	Email string `json:"email"`
+	Password string `json:"password"`	
 	jwt.StandardClaims
 }
 
@@ -19,7 +20,8 @@ func GenerateToken(email, password string) (string, error) {
 	// 设置令牌过期时间
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		Email: email + password,
+		Email: email,
+		Password: password,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
