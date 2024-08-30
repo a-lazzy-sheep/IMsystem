@@ -4,10 +4,13 @@ import (
 	"ginchat/models"
 	"ginchat/utils"
 	"log"
+	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 // GetUserList
@@ -177,5 +180,42 @@ func Login(c *gin.Context) {
 			"message": "Login successful",
 			"User information": u,
 		})
+	}
+}
+
+
+// 防止跨域站点伪造请求
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+    WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+// WebsocketHandler
+// @Tags Websocket
+// @Success 200 {string} WebsocketHandler
+// @Router /user/SendMessage [get]
+func WebsocketHandler(c *gin.Context) {
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer ws.Close()
+	for {
+		msg, err := utils.Subscribe(c, utils.PublicKey)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		tm := time.Now().Format("2006-01-02 15:04:05")
+		m := tm + " " + msg
+		log.Println(m)
+		if err := ws.WriteMessage(websocket.TextMessage, []byte(m)); err!= nil {
+			log.Println(err)
+		}
 	}
 }
