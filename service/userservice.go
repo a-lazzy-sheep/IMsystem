@@ -2,6 +2,7 @@ package service
 
 import (
 	"ginchat/models"
+	"ginchat/utils"
 	"log"
 	"strconv"
 
@@ -164,14 +165,13 @@ func Login(c *gin.Context) {
 		return
 	} else {
 		// 生成token
-		// token, err:= models.GenerateToken()
-		token := "dfsajklvhc"
-		// if err != nil {
-		// 	c.JSON(500, gin.H{
-		// 		"error": "Failed to generate token",
-		// 	})
-		// 	return
-		// }
+		token, err:= utils.GenerateToken(user.Email, user.Password)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"error": "Failed to generate token",
+			})
+			return
+		}
 		c.JSON(200, gin.H{
 			"token" :  token,
 			"message": "Login successful",
