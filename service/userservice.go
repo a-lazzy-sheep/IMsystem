@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -205,17 +204,18 @@ func WebsocketHandler(c *gin.Context) {
 	}
 	defer ws.Close()
 	for {
-		msg, err := utils.Subscribe(c, utils.PublicKey)
+		// 读取消息
+		messageType, message, err := ws.ReadMessage()
 		if err != nil {
-			log.Println(err)
-			return
+			log.Println("Error reading message:", err)
+			break
 		}
+		log.Printf("Received: %s", message)
 
-		tm := time.Now().Format("2006-01-02 15:04:05")
-		m := tm + " " + msg
-		log.Println(m)
-		if err := ws.WriteMessage(websocket.TextMessage, []byte(m)); err!= nil {
-			log.Println(err)
+		// 发送消息
+		if err := ws.WriteMessage(messageType, message); err != nil {
+			log.Println("Error writing message:", err)
+			break
 		}
 	}
 }
