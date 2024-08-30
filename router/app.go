@@ -19,6 +19,7 @@ func Router() *gin.Engine{
 	router.POST("/user/Register",service.Register)
 	router.DELETE("/user/DeleteUser",service.DeleteUser)
 	router.PUT("/user/UpdateUser",service.UpdateUser)
+	router.POST("/user/Login",service.Login)
 
 	return router
 }

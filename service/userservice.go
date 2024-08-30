@@ -41,13 +41,13 @@ func Register(c *gin.Context) {
 	user.Email = c.Query("email")
 	user.Password = c.Query("password")
 	rePassword := c.Query("rePassword")
-	if _, err := FindUserByEmail(user.Email); err == nil {
+	if _, err := models.FindUserByEmail(user.Email); err == nil {
 		c.JSON(400, gin.H{
 			"error": "Email already exists",
 		})
 		return
 	}
-	if _, err := FindUserByName(user.Name); err == nil {
+	if _, err := models.FindUserByName(user.Name); err == nil {
 		c.JSON(400, gin.H{
 			"error": "Username already exists",
 		})
@@ -134,7 +134,7 @@ func UpdateUser(c *gin.Context) {
 	}
 	if err := models.UpdateUser(&user); err != nil {
 		c.JSON(500, gin.H{
-			"error": "Failed to update user",
+			"error": "Failed to update user because of wrong id or columns",
 		})
 		return
 	}
@@ -144,10 +144,38 @@ func UpdateUser(c *gin.Context) {
 	})
 }
 
-func FindUserByName(name string) (*models.UserBasic, error) {
-	return models.FindUserByName(name)
-}
 
-func FindUserByEmail(email string) (*models.UserBasic, error) {
-	return models.FindUserByEmail(email)
+
+// Login
+// @Summary User login
+// @Tags Login
+// @param email query string true "Email of the user"
+// @param password query string true "Password of the user"
+// @Success 200 {string} Login
+// @Router /user/Login [post]
+func Login(c *gin.Context) {
+	var user models.UserBasic
+	user.Email = c.Query("email")
+	user.Password = c.Query("password")
+	if u, err := models.FindUserByEmailAndPassword(user.Email, user.Password); err != nil {
+		c.JSON(401, gin.H{
+			"error": "Invalid email or password",
+		})
+		return
+	} else {
+		// 生成token
+		// token, err:= models.GenerateToken()
+		token := "dfsajklvhc"
+		// if err != nil {
+		// 	c.JSON(500, gin.H{
+		// 		"error": "Failed to generate token",
+		// 	})
+		// 	return
+		// }
+		c.JSON(200, gin.H{
+			"token" :  token,
+			"message": "Login successful",
+			"User information": u,
+		})
+	}
 }

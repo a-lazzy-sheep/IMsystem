@@ -35,6 +35,27 @@ paths:
             type: string
       tags:
       - getlist
+  /user/Login:
+    post:
+      parameters:
+      - description: Email of the user
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Password of the user
+        in: query
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: User login
+      tags:
+      - Login
   /user/Register:
     post:
       parameters:

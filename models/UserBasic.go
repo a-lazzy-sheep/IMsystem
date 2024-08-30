@@ -2,6 +2,8 @@ package models
 
 import (
 	"ginchat/utils"
+	"time"
+
 	// "github.com/asaskevich/govalidator"
 
 	"gorm.io/gorm"
@@ -19,7 +21,7 @@ type UserBasic struct {
 	Password      string `valid:"-"`
 	Phone         string `valid:"numeric"`
 	Email         string `valid:"required,email"`
-	Identity      int 
+	Identity      int   
 	ClientID      string
 	ClientPort    int
 	LoginTime     uint64
@@ -60,7 +62,10 @@ func DeleteUser(user *UserBasic) error {
 
 func UpdateUser(user *UserBasic) error {
 	result := utils.DB.Model(&UserBasic{})
-	result = result.Where("id = ?",user.ID)
+	result = result.Where("id = ?",user.ID) // if can not find the user,
+	if result.Error != nil {
+		return result.Error
+	}
 	result = result.Updates(UserBasic{
 		Name:          user.Name,
 		Password:      user.Password,
@@ -98,4 +103,21 @@ func FindUserByEmail(email string) (*UserBasic, error) {
 	}
 	return &user, nil
 }
+
+func FindUserByEmailAndPassword(email, password string) (*UserBasic, error) {
+	var user UserBasic
+	result := utils.DB.Where("email = ? and password = ?",email,password).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	result = result.Updates(UserBasic{
+		LoginTime:     uint64(time.Now().Unix()),
+		IsLogout:      false,
+	})
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
+
 
