@@ -32,18 +32,17 @@ func GetUserList(c *gin.Context) {
 // Register
 // @Summary Register a new user
 // @Tags register
-// @param name query string true "Name of the user"
 // @param email query string true "Email of the user"
+// @param name query string true "Name of the user"
 // @param password query string true "Password of the user"
-// @param rePassword query string true "Re-enter password of the user"
 // @Success 200 {string} Register
 // @Router /user/Register [post]
 func Register(c *gin.Context) {
 	var user models.UserBasic
-	user.Name = c.Query("name")
-	user.Email = c.Query("email")
-	user.Password = c.Query("password")
-	rePassword := c.Query("rePassword")
+	user.Email = c.Request.FormValue("email")
+	user.Name = c.Request.FormValue("name")
+	user.Password = c.Request.FormValue("password")
+	// rePassword := c.Request.FormValue("rePassword")
 	if _, err := models.FindUserByEmail(user.Email); err == nil {
 		c.JSON(400, gin.H{
 			"error": "Email already exists",
@@ -56,12 +55,13 @@ func Register(c *gin.Context) {
 		})
 		return
 	}
-	if user.Password != rePassword {
-		c.JSON(400, gin.H{
-			"error": "Passwords do not match",
-		})
-		return
-	}
+	// if user.Password != rePassword {
+	// 	log.Printf("Passwords do not match and user.Password is %s and rePassword is %s", user.Password, rePassword)
+	// 	c.JSON(400, gin.H{
+	// 		"error": "Passwords do not match",
+	// 	})
+	// 	return
+	// }
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(400, gin.H{
 			"error": "Invalid request",

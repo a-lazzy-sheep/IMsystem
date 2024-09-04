@@ -9,7 +9,7 @@ paths:
           schema:
             type: string
       tags:
-      - index
+      - 首页
   /user/DeleteUser:
     delete:
       parameters:
@@ -59,24 +59,19 @@ paths:
   /user/Register:
     post:
       parameters:
-      - description: Name of the user
-        in: query
-        name: name
-        required: true
-        type: string
       - description: Email of the user
         in: query
         name: email
         required: true
         type: string
+      - description: Name of the user
+        in: query
+        name: name
+        required: true
+        type: string
       - description: Password of the user
         in: query
         name: password
-        required: true
-        type: string
-      - description: Re-enter password of the user
-        in: query
-        name: rePassword
         required: true
         type: string
       responses:

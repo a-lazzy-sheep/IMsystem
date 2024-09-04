@@ -18,7 +18,7 @@ const docTemplate = `{
         "/index": {
             "get": {
                 "tags": [
-                    "index"
+                    "首页"
                 ],
                 "responses": {
                     "200": {
@@ -111,13 +111,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Name of the user",
-                        "name": "name",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Email of the user",
                         "name": "email",
                         "in": "query",
@@ -125,15 +118,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Password of the user",
-                        "name": "password",
+                        "description": "Name of the user",
+                        "name": "name",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Re-enter password of the user",
-                        "name": "rePassword",
+                        "description": "Password of the user",
+                        "name": "password",
                         "in": "query",
                         "required": true
                     }
