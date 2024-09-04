@@ -192,10 +192,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// WebsocketHandler
-// @Tags Websocket
-// @Success 200 {string} WebsocketHandler
-// @Router /user/SendMessage [get]
 func WebsocketHandler(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -218,4 +214,8 @@ func WebsocketHandler(c *gin.Context) {
 			break
 		}
 	}
+}
+
+func SendUserMsg(c *gin.Context) {
+	models.Chat(c.Writer, c.Request)
 }

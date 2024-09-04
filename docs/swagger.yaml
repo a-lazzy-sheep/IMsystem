@@ -87,15 +87,6 @@ paths:
       summary: Register a new user
       tags:
       - register
-  /user/SendMessage:
-    get:
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      tags:
-      - Websocket
   /user/UpdateUser:
     put:
       parameters:

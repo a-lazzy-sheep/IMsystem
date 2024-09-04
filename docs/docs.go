@@ -148,21 +148,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/SendMessage": {
-            "get": {
-                "tags": [
-                    "Websocket"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/user/UpdateUser": {
             "put": {
                 "tags": [
