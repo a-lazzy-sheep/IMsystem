@@ -75,6 +75,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{
+		"code" : 0,
 		"message": "User created successfully",
 	})
 }
@@ -178,7 +179,7 @@ func Login(c *gin.Context) {
 			"code": "0",
 			"message": "Login successfully",
 			"token" :  token,
-			"data": u.ID,
+			"data": u,
 		})
 	}
 }
