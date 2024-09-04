@@ -12,9 +12,21 @@ import (
 func Router() *gin.Engine{
 	router := gin.Default()
 
+	// swagger
 	docs.SwaggerInfo.BasePath = ""
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	//静态资源
+	router.Static("/asset", "asset/")
+	router.StaticFile("/favicon.ico", "asset/images/favicon.ico")
+	//	r.StaticFS()
+	router.LoadHTMLGlob("views/**/*")
+
+	//首页
+	router.GET("/", service.GetIndex)
 	router.GET("/index",service.GetIndex)
+
+	//用户模块
 	router.GET("/user/GetUserList",service.GetUserList)
 	router.POST("/user/Register",service.Register)
 	router.DELETE("/user/DeleteUser",service.DeleteUser)

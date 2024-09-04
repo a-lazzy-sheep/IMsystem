@@ -3,8 +3,8 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"net"
+	// "log"
+	// "net"
 	"net/http"
 	"strconv"
 	"sync"
@@ -127,77 +127,77 @@ func recvProc(node *Node) {
 			fmt.Println(err)
 		}
 		dispatch(data)
-		broadMsg(data) //todo 将消息广播到局域网
+		// broadMsg(data) //todo 将消息广播到局域网
 		fmt.Println("[ws] recvProc <<<<< ", string(data))
 	}
 }
 
-var tcpsendChan chan []byte = make(chan []byte, 1024)
+// var tcpsendChan chan []byte = make(chan []byte, 1024)
 
-func broadMsg(data []byte) {
-	tcpsendChan <- data
-}
+// func broadMsg(data []byte) {
+// 	tcpsendChan <- data
+// }
 
-func init() {
-	go tcpSendProc()
-	go tcpRecvProc()
-	fmt.Println("init goroutine ")
-}
+// func init() {
+// 	go tcpSendProc()
+// 	go tcpRecvProc()
+// 	fmt.Println("init goroutine ")
+// }
 
-//完成tcp数据发送协程
-func tcpSendProc() {
-	conn, err := net.Dial("tcp", "localhost:8080")
-	if err != nil {
-		log.Printf("tcpSendProc err: %v", err)
-	}
-	defer conn.Close()
-	if err != nil {
-		fmt.Println(err)
-	}
-	for {
-		select {
-		case data := <-tcpsendChan:
-			fmt.Println("tcpSendProc  data :", string(data))
-			_, err := conn.Write(data)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-		}
-	}
+// //完成tcp数据发送协程
+// func tcpSendProc() {
+// 	conn, err := net.Dial("tcp", "localhost:8080")
+// 	if err != nil {
+// 		log.Printf("tcpSendProc err: %v", err)
+// 	}
+// 	defer conn.Close()
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	for {
+// 		select {
+// 		case data := <-tcpsendChan:
+// 			fmt.Println("tcpSendProc  data :", string(data))
+// 			_, err := conn.Write(data)
+// 			if err != nil {
+// 				fmt.Println(err)
+// 				return
+// 			}
+// 		}
+// 	}
 
-}
+// }
 
-//完成tcp数据接收协程
-func tcpRecvProc() {
-	listener, err := net.Listen("tcp", "localhost:8080")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer listener.Close()
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		go handleTCPConnection(conn)
-	}
-}
+// //完成tcp数据接收协程
+// func tcpRecvProc() {
+// 	listener, err := net.Listen("tcp", "localhost:8080")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	defer listener.Close()
+// 	for {
+// 		conn, err := listener.Accept()
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			continue
+// 		}
+// 		go handleTCPConnection(conn)
+// 	}
+// }
 
-func handleTCPConnection(conn net.Conn) {
-	defer conn.Close()
-	for {
-		var buf [512]byte
-		n, err := conn.Read(buf[0:])
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println("tcpRecvProc  data :", string(buf[0:n]))
-		dispatch(buf[0:n])
-	}
-}
+// func handleTCPConnection(conn net.Conn) {
+// 	defer conn.Close()
+// 	for {
+// 		var buf [512]byte
+// 		n, err := conn.Read(buf[0:])
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			return
+// 		}
+// 		fmt.Println("tcpRecvProc  data :", string(buf[0:n]))
+// 		dispatch(buf[0:n])
+// 	}
+// }
 
 //后端调度逻辑处理
 func dispatch(data []byte) {
