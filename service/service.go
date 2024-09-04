@@ -1,9 +1,10 @@
 package service
 
 import (
-	// "strconv"
+	"fmt"
+	"ginchat/models"
+	"strconv"
 	"text/template"
-	// "ginchat/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,32 +35,32 @@ func ToRegister(c *gin.Context) {
 	// })
 }
 
-// func ToChat(c *gin.Context) {
-// 	ind, err := template.ParseFiles("views/chat/index.html",
-// 		"views/chat/head.html",
-// 		"views/chat/foot.html",
-// 		"views/chat/tabmenu.html",
-// 		"views/chat/concat.html",
-// 		"views/chat/group.html",
-// 		"views/chat/profile.html",
-// 		"views/chat/createcom.html",
-// 		"views/chat/userinfo.html",
-// 		"views/chat/main.html")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	userId, _ := strconv.Atoi(c.Query("userId"))
-// 	token := c.Query("token")
-// 	user := models.UserBasic{}
-// 	user.ID = uint(userId)
-// 	user.Identity = token
-// 	//fmt.Println("ToChat>>>>>>>>", user)
-// 	ind.Execute(c.Writer, user)
-// 	// c.JSON(200, gin.H{
-// 	// 	"message": "welcome !!  ",
-// 	// })
-// }
+func ToChat(c *gin.Context) {
+	ind, err := template.ParseFiles("views/chat/index.html",
+		"views/chat/head.html",
+		"views/chat/foot.html",
+		"views/chat/tabmenu.html",
+		"views/chat/concat.html",
+		"views/chat/group.html",
+		"views/chat/profile.html",
+		"views/chat/createcom.html",
+		"views/chat/userinfo.html",
+		"views/chat/main.html")
+	if err != nil {
+		panic(err)
+	}
+	userId, _ := strconv.Atoi(c.Query("userId"))
+	token := c.Query("token")
+	user := models.UserBasic{}
+	user.ID = uint(userId)
+	user.Identity = token
+	fmt.Println("ToChat>>>>>>>>", user.ID, user.Identity)
+	ind.Execute(c.Writer, user)
+	// c.JSON(200, gin.H{
+	// 	"message": "welcome !!  ",
+	// })
+}
 
-// func Chat(c *gin.Context) {
-// 	models.Chat(c.Writer, c.Request)
-// }
+func Chat(c *gin.Context) {
+	models.Chat(c.Writer, c.Request)
+}

@@ -21,7 +21,7 @@ type UserBasic struct {
 	Password      string `valid:"-"`
 	Phone         string `valid:"numeric"`
 	Email         string `valid:"required,email"`
-	Identity      int   
+	Identity      string   
 	ClientID      string
 	ClientPort    int
 	LoginTime     uint64

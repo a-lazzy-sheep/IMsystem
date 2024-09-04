@@ -175,9 +175,10 @@ func Login(c *gin.Context) {
 			return
 		}
 		c.JSON(200, gin.H{
+			"code": "0",
+			"message": "Login successfully",
 			"token" :  token,
-			"message": "Login successful",
-			"User information": u,
+			"data": u.ID,
 		})
 	}
 }
