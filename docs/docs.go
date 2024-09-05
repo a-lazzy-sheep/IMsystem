@@ -30,6 +30,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/searchFriends": {
+            "post": {
+                "tags": [
+                    "searchfriends"
+                ],
+                "summary": "search friends",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id of the user",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/DeleteUser": {
             "delete": {
                 "tags": [

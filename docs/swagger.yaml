@@ -10,6 +10,22 @@ paths:
             type: string
       tags:
       - 首页
+  /searchFriends:
+    post:
+      parameters:
+      - description: Id of the user
+        in: query
+        name: userId
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: search friends
+      tags:
+      - searchfriends
   /user/DeleteUser:
     delete:
       parameters:

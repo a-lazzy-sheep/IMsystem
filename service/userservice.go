@@ -115,7 +115,7 @@ func UpdateUser(c *gin.Context) {
 
 	// 将字符串类型的id转换为uint类型
 	var id64 uint64
-	if id64, err = strconv.ParseUint(c.Query("id"), 10, 64); err != nil {
+	if id64, err = strconv.ParseUint(c.Request.FormValue("id"), 10, 64); err != nil {
 		c.JSON(400, gin.H{
 			"error": "Invalid ID format",
 		})
@@ -123,10 +123,10 @@ func UpdateUser(c *gin.Context) {
 	}
 	user.ID = uint(id64)
 
-	user.Name = c.Query("name")
-	user.Email = c.Query("email")
-	user.Password = c.Query("password")
-	user.Phone = c.Query("phone")
+	user.Name = c.Request.FormValue("name")
+	user.Email = c.Request.FormValue("email")
+	user.Password = c.Request.FormValue("password")
+	user.Phone = c.Request.FormValue("phone")
 	result, err := govalidator.ValidateStruct(&user)
 	if err != nil {
 		log.Printf("Invalid data format: %v", err)
@@ -159,8 +159,8 @@ func UpdateUser(c *gin.Context) {
 // @Router /user/Login [post]
 func Login(c *gin.Context) {
 	var user models.UserBasic
-	user.Email = c.Query("email")
-	user.Password = c.Query("password")
+	user.Email = c.Request.FormValue("email")
+	user.Password = c.Request.FormValue("password")
 	if u, err := models.FindUserByEmailAndPassword(user.Email, user.Password); err != nil {
 		c.JSON(401, gin.H{
 			"error": "Invalid email or password",
@@ -220,4 +220,21 @@ func WebsocketHandler(c *gin.Context) {
 
 func SendUserMsg(c *gin.Context) {
 	models.Chat(c.Writer, c.Request)
+}
+
+// SearchFriends
+// @Summary search friends
+// @Tags searchfriends
+// @param userId query string true "Id of the user"
+// @Success 200 {string} Register
+// @Router /searchFriends [post]
+func SearchFriends(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Request.FormValue("userId"))
+	users := models.SearchFriend(uint(id))
+	// c.JSON(200, gin.H{
+	// 	"code":    0, //  0成功   -1失败
+	// 	"message": "查询好友列表成功！",
+	// 	"data":    users,
+	// })
+	utils.RespOKList(c.Writer, users, len(users))
 }
