@@ -288,3 +288,17 @@ func CreateCommunity(c *gin.Context) {
 		utils.RespFail(c.Writer, msg)
 	}
 }
+
+//加入群 userId uint, comId uint
+func JoinCommunity(c *gin.Context) {
+	userId, _ := strconv.Atoi(c.Request.FormValue("userId"))
+	comId := c.Request.FormValue("comId")
+
+	//	name := c.Request.FormValue("name")
+	data, msg := models.JoinCommunity(uint(userId), comId)
+	if data == 0 {
+		utils.RespOK(c.Writer, data, msg)
+	} else {
+		utils.RespFail(c.Writer, msg)
+	}
+}
