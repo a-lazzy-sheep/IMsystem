@@ -40,6 +40,8 @@ func Router() *gin.Engine{
 	router.GET("/user/SendMessage",service.WebsocketHandler)
 	// 发送接受消息
 	router.GET("/user/SendUserMessage",service.SendUserMsg)
+	//添加好友
+	router.POST("/contact/addfriend", service.AddFriend)
 
 
 	return router

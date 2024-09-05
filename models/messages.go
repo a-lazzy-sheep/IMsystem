@@ -116,6 +116,7 @@ func sendProc(node *Node) {
 
 func recvProc(node *Node) {
 	for {
+		// 从WebSocket连接中读取消息
 		_, data, err := node.Conn.ReadMessage()
 		if err != nil {
 			fmt.Println(err)
@@ -126,9 +127,9 @@ func recvProc(node *Node) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		fmt.Println("[ws] recvProc <<<<< ", string(data))
 		dispatch(data)
 		// broadMsg(data) //todo 将消息广播到局域网
-		fmt.Println("[ws] recvProc <<<<< ", string(data))
 	}
 }
 

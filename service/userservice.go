@@ -238,3 +238,22 @@ func SearchFriends(c *gin.Context) {
 	// })
 	utils.RespOKList(c.Writer, users, len(users))
 }
+
+// AddFriend
+// @Summary add friends
+// @Tags addfriends
+// @param userId query string true "Id of the user"
+// @param targetName query string true "targetName of the user"
+// @Success 200 {string} Register
+// @Router /contact/addfriend [post]
+func AddFriend(c *gin.Context) {
+	userId, _ := strconv.Atoi(c.Request.FormValue("userId"))
+	targetName := c.Request.FormValue("targetName")
+	//targetId, _ := strconv.Atoi(c.Request.FormValue("targetId"))
+	code, msg := models.AddFriend(uint(userId), targetName)
+	if code == 0 {
+		utils.RespOK(c.Writer, code, msg)
+	} else {
+		utils.RespFail(c.Writer, msg)
+	}
+}
