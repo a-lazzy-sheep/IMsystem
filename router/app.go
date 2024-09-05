@@ -36,6 +36,7 @@ func Router() *gin.Engine{
 	router.DELETE("/user/DeleteUser",service.DeleteUser)
 	router.PUT("/user/UpdateUser",service.UpdateUser)
 	router.POST("/user/Login",service.Login)
+	router.POST("/user/find", service.FindByID)
 	// Websocket发送接受消息测试
 	router.GET("/user/SendMessage",service.WebsocketHandler)
 	// 发送接受消息

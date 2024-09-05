@@ -85,3 +85,13 @@ func JoinCommunity(userId uint, comId string) (int, string) {
 		return 0, "加群成功"
 	}
 }
+
+func SearchUserByGroupId(communityId uint) []uint {
+	contacts := make([]Contact, 0)
+	objIds := make([]uint, 0)
+	utils.DB.Where("target_id = ? and type=2", communityId).Find(&contacts)
+	for _, v := range contacts {
+		objIds = append(objIds, uint(v.OwnerId))
+	}
+	return objIds
+}
