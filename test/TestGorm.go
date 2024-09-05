@@ -15,10 +15,10 @@ func main() {
 	}
 
 	// Migrate the schema
-	db.AutoMigrate(&models.Contact{})
+	db.AutoMigrate(&models.Community{})
 
 	// Create
-	db.Create(&models.Contact{OwnerId: 2, TargetId: 6, Type: 1})
+	db.Create(&models.Community{Name: "打倒李小东", OwnerId: 4})
 
 	// Read
 	// user := models.UserBasic{}
