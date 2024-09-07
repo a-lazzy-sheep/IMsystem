@@ -1,8 +1,12 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"ginchat/utils"
+	"log"
+
 	// "log"
 	// "net"
 	"net/http"
@@ -10,7 +14,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
+	"github.com/spf13/viper"
 	"gopkg.in/fatih/set.v0"
 	"gorm.io/gorm"
 )
@@ -95,6 +101,8 @@ func Chat(writer http.ResponseWriter, request *http.Request) {
 	go sendProc(node)
 	//6.完成接受逻辑
 	go recvProc(node)
+	//7.加入在线用户到缓存
+	SetUserOnlineInfo("online_"+Id, []byte(node.Addr), time.Duration(viper.GetInt("timeout.RedisOnlineTime"))*time.Hour)
 
 	sendMsg(userId, []byte("欢迎进入聊天系统"))
 
@@ -228,11 +236,40 @@ func sendMsg(userId int64, msg []byte) {
 	rwLocker.RLock()
 	node, ok := clientMap[userId]
 	rwLocker.RUnlock()
-	if ok {
-		node.DataQueue <- msg
+	jsonMsg := Message{}
+	json.Unmarshal(msg, &jsonMsg)
+	ctx := context.Background()
+	targetIdStr := strconv.Itoa(int(userId))
+	userIdStr := strconv.Itoa(int(jsonMsg.UserId))
+	log.Printf("sendMsg userId: %v, targetId: %v", userId, jsonMsg.TargetId)
+	jsonMsg.CreateTime = uint64(time.Now().Unix())
+	r, err := utils.RDS.Get(ctx, "online_"+userIdStr).Result()
+	if err != nil {
+		fmt.Println(err)
+	}
+	if r != "" {
+		if ok {
+			fmt.Println("sendMsg >>> userID: ", userId, "  msg:", string(msg))
+			node.DataQueue <- msg
+		}
+	}
+	var key string
+	if userId > jsonMsg.UserId {
+		key = "msg_" + userIdStr + "_" + targetIdStr
 	} else {
-		fmt.Println("sendMsg  userId not found")
-	}	
+		key = "msg_" + targetIdStr + "_" + userIdStr
+	}
+	res, err := utils.RDS.ZRevRange(ctx, key, 0, -1).Result()
+	if err != nil {
+		log.Printf("sendMsg err: %v", err)
+	}
+	score := float64(cap(res)) + 1
+	ress, e := utils.RDS.ZAdd(ctx, key, &redis.Z{score, msg}).Result() //jsonMsg
+	//res, e := utils.Red.Do(ctx, "zadd", key, 1, jsonMsg).Result() //备用 后续拓展 记录完整msg
+	if e != nil {
+		log.Printf("sendMsg err: %v", e)
+	}
+	log.Printf("sendMsg res: %v", ress)
 }
 
 func sendGroupMsg(targetId int64, msg []byte) {
@@ -245,4 +282,64 @@ func sendGroupMsg(targetId int64, msg []byte) {
 		}
 
 	}
+}
+
+func JoinGroup(userId uint, comId string) (int, string) {
+	contact := Contact{}
+	contact.OwnerId = userId
+	//contact.TargetId = comId
+	contact.Type = 2
+	community := Community{}
+
+	utils.DB.Where("id=? or name=?", comId, comId).Find(&community)
+	if community.Name == "" {
+		return -1, "没有找到群"
+	}
+	utils.DB.Where("owner_id=? and target_id=? and type =2 ", userId, comId).Find(&contact)
+	if !contact.CreatedAt.IsZero() {
+		return -1, "已加过此群"
+	} else {
+		contact.TargetId = community.ID
+		utils.DB.Create(&contact)
+		return 0, "加群成功"
+	}
+}
+
+//获取缓存里面的消息
+func RedisMsg(userIdA int64, userIdB int64, start int64, end int64, isRev bool) []string {
+	rwLocker.RLock()
+	//node, ok := clientMap[userIdA]
+	rwLocker.RUnlock()
+	//jsonMsg := Message{}
+	//json.Unmarshal(msg, &jsonMsg)
+	ctx := context.Background()
+	userIdStr := strconv.Itoa(int(userIdA))
+	targetIdStr := strconv.Itoa(int(userIdB))
+	var key string
+	if userIdA > userIdB {
+		key = "msg_" + targetIdStr + "_" + userIdStr
+	} else {
+		key = "msg_" + userIdStr + "_" + targetIdStr
+	}
+	//key = "msg_" + userIdStr + "_" + targetIdStr
+	//rels, err := utils.Red.ZRevRange(ctx, key, 0, 10).Result()  //根据score倒叙
+
+	var rels []string
+	var err error
+	if isRev {
+		rels, err = utils.RDS.ZRange(ctx, key, start, end).Result()
+	} else {
+		rels, err = utils.RDS.ZRevRange(ctx, key, start, end).Result()
+	}
+	if err != nil {
+		fmt.Println(err) //没有找到
+	}
+	// 发送推送消息
+	/**
+	// 后台通过websoket 推送消息
+	for _, val := range rels {
+		fmt.Println("sendMsg >>> userID: ", userIdA, "  msg:", val)
+		node.DataQueue <- []byte(val)
+	}**/
+	return rels
 }

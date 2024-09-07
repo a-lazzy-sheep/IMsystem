@@ -37,8 +37,11 @@ func Router() *gin.Engine{
 	router.PUT("/user/UpdateUser",service.UpdateUser)
 	router.POST("/user/Login",service.Login)
 	router.POST("/user/find", service.FindByID)
+
 	// Websocket发送接受消息测试
 	router.GET("/user/SendMessage",service.WebsocketHandler)
+	//发送消息
+	router.GET("/user/sendMsg", service.SendMsg)
 	// 发送接受消息
 	router.GET("/user/SendUserMessage",service.SendUserMsg)
 	//添加好友
@@ -52,6 +55,9 @@ func Router() *gin.Engine{
 	//退出群
 	//上传文件
 	router.POST("/attach/upload", service.Upload)
+
+	// 缓存消息
+	router.POST("/user/redisMsg", service.RedisMsg)
 
 
 	return router

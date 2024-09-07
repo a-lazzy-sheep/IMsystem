@@ -1,11 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"ginchat/models"
 	"ginchat/utils"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -193,6 +195,20 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
+func SendMsg(c *gin.Context) {
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer func(ws *websocket.Conn) {
+		err = ws.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(ws)
+	MsgHandler(c, ws)
+}
 
 func WebsocketHandler(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -309,4 +325,30 @@ func FindByID(c *gin.Context) {
 	//	name := c.Request.FormValue("name")
 	data := models.FindByID(uint(userId))
 	utils.RespOK(c.Writer, data, "ok")
+}
+
+func RedisMsg(c *gin.Context) {
+	userIdA, _ := strconv.Atoi(c.PostForm("userIdA"))
+	userIdB, _ := strconv.Atoi(c.PostForm("userIdB"))
+	start, _ := strconv.Atoi(c.PostForm("start"))
+	end, _ := strconv.Atoi(c.PostForm("end"))
+	isRev, _ := strconv.ParseBool(c.PostForm("isRev"))
+	res := models.RedisMsg(int64(userIdA), int64(userIdB), int64(start), int64(end), isRev)
+	utils.RespOKList(c.Writer, "ok", res)
+}
+
+func MsgHandler(c *gin.Context, ws *websocket.Conn) {
+	for {
+		msg, err := utils.Subscribe(c, utils.PublicKey)
+		if err != nil {
+			fmt.Println(" MsgHandler 发送失败", err)
+		}
+
+		tm := time.Now().Format("2006-01-02 15:04:05")
+		m := fmt.Sprintf("[ws][%s]:%s", tm, msg)
+		err = ws.WriteMessage(1, []byte(m))
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}
 }

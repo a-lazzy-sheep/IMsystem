@@ -14,7 +14,7 @@ import (
 )
 
 var DB *gorm.DB
-var RDB *redis.Client
+var RDS *redis.Client
 
 func InitConfig() {
 	viper.SetConfigName("app")
@@ -56,13 +56,13 @@ func InitRedis() {
 	if db == 0 {
 		log.Printf("redis db is not configured")
 	}
-	RDB = redis.NewClient(&redis.Options{
+	RDS = redis.NewClient(&redis.Options{
 		Addr:	addr,
 		Password: passwd,
 		DB:	db,
 	})
 	// 增加错误处理机制
-	_, err := RDB.Ping(context.Background()).Result()
+	_, err := RDS.Ping(context.Background()).Result()
 	if err != nil {
 		log.Fatalf("Failed to connect to Redis: %v", err)
 	}
@@ -74,7 +74,7 @@ const (
 
 // Publish 消息到redis
 func Publish(ctx context.Context, channel string, message string) error {
-	err := RDB.Publish(ctx, channel, message).Err()
+	err := RDS.Publish(ctx, channel, message).Err()
 	if err!= nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func Publish(ctx context.Context, channel string, message string) error {
 
 // Subscribe 订阅redis消息
 func Subscribe(ctx context.Context, channel string) (string, error) {
-	pubsub := RDB.Subscribe(ctx, channel)
+	pubsub := RDS.Subscribe(ctx, channel)
 	msg, err := pubsub.ReceiveMessage(ctx)
 	if err!= nil {
 		log.Println("Error subscribing:", err)
